@@ -1,0 +1,10 @@
+﻿@model ReservationViewModel
+
+@Html.BeginForm("", "", FormMethod.Post)
+{
+    @Html.DropDownList("Text",
+        Model.Workplaces.Select(x => new SelectListItem {
+            Text = x.ToString(),
+            Value = x.ToString()
+        }), new {@class="form-control"})
+}
