@@ -3,7 +3,10 @@ using HotDesk.DataTransferObjects;
 using HotDesk.Entities;
 using HotDesk.Models;
 using HotDesk.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 
@@ -36,7 +39,7 @@ public class ReservationService
 
 
 
-	public ReservationViewModel GetReservationViewModel(GetReservationInfoDto dto)
+	public CreateReservationViewModel GetCreateReservationViewModel(GetReservationInfoDto dto)
 	{
 		if (dto.From < DateTime.Now)
 		{
@@ -44,14 +47,14 @@ public class ReservationService
 			dto.To = dto.From.AddHours(8);
 		}
 
-		var model = new ReservationViewModel
+		var model = new CreateReservationViewModel
 		{
             SelectedEmployeeId = dto.EmployeeId,
             SelectedWorkplaceId = dto.WorkplaceId,
 			TimeFrom = dto.From,
 			TimeTo = dto.To,
             Employees = GetEmployees(),
-			Workplaces = GetAvailableWorkplaces(dto.From, dto.To),
+			Workplaces = GetWorkplaces(dto.From, dto.To),
             SelectedWorkplace = GetWorkplace(dto.WorkplaceId),
             AvailableEquipment = GetAvailableEquipment(dto.From, dto.To, dto.WorkplaceId)
         };
@@ -63,7 +66,7 @@ public class ReservationService
         var employees = _employeesRepository.GetAll();
         return _mapper.Map<List<EmployeeDto>>(employees);
     }
-	private List<WorkplaceDto> GetAvailableWorkplaces(DateTime from, DateTime to)
+	private List<WorkplaceDto> GetWorkplaces(DateTime from, DateTime to)
 	{
         var workplaces = _workplaceRepository.GetAll();
         var equipmentForWorkplaces = _equipmentForWorkplaceRepository.GetAll();
@@ -133,38 +136,111 @@ public class ReservationService
 
     public void CreateReservation(CreateReservationDto dto)
     {
-		// add reservation
-		var reservation = _mapper.Map<Reservation>(dto);
-		_reservationRepository.Add(reservation);
-
-
-        var workplaces = GetAvailableWorkplaces(dto.From, dto.To);
-		var targetWp = workplaces.First(w => w.Id == reservation.WorkplaceId);
-        
-		
-		
+		var workplaces = GetWorkplaces(dto.From, dto.To).Where(w => !w.IsReserved).ToList();
+		var reservedWp = workplaces.First(w => w.Id == dto.WorkplaceId);
 
         foreach (var equipment in dto.AdditionalEquipment)
 		{	// for every eq
 			for (int i = 0; i < equipment.Count; i++)
 			{
-				// find closest (table, room, floor) by eqId
-				// 1. from same room
-				var test = workplaces.Where(w => w.Id != targetWp.Id
-					&& w.Floor == targetWp.Floor
-					&& w.Room == targetWp.Room
-					&& w.Equipment.Any(e => e.EquipmentId == equipment.Id))
-					.Aggregate((t1, t2) => Math.Abs(t1.Table - targetWp.Table) < Math.Abs(t2.Table - targetWp.Table) ? t1 : t2);
+				// workplaces without reserved workplace and only with desired equipment type
+				var workplacesWithEqType = workplaces.Where(w => w.Id != reservedWp.Id
+					&& w.Equipment.Any(e => e.EquipmentId == equipment.Id && e.Count != 0));
 
-                // add 1 to reserved eqForWp count
-                // substract 1 from closest eqForWp
+				// find closest (table, room, floor)
+				// 1. from same room
+				var wpList = workplacesWithEqType.Where(w => w.Floor == reservedWp.Floor && w.Room == reservedWp.Room);
+                if (!wpList.IsNullOrEmpty())
+				{
+					var resultWp = wpList.Aggregate((t1, t2) => Math.Abs(t1.Table - reservedWp.Table) <= Math.Abs(t2.Table - reservedWp.Table) ? t1 : t2);
+                    MoveEquipment(workplaces, equipment.Id, resultWp, reservedWp);
+                    continue;
+				}
+
+                // 2. from same floor but different room
+                wpList = workplacesWithEqType.Where(w => w.Floor == reservedWp.Floor);
+				if (!wpList.IsNullOrEmpty())
+				{	
+					var resultWp = wpList.Aggregate((r1, r2) => Math.Abs(r1.Room - reservedWp.Room) <= Math.Abs(r2.Room - reservedWp.Room) ? r1 : r2);
+                    MoveEquipment(workplaces, equipment.Id, resultWp, reservedWp);
+                    continue;
+				}
+
+				// 3. from different floor
+				wpList = workplacesWithEqType;
+				if (!wpList.IsNullOrEmpty())
+				{
+                    var resultWp = wpList.Aggregate((f1, f2) => Math.Abs(f1.Floor - reservedWp.Floor) <= Math.Abs(f2.Floor - reservedWp.Floor) ? f1 : f2);
+                    MoveEquipment(workplaces, equipment.Id, resultWp, reservedWp);
+                }
             }
 		}
-		
-        _equipmentForWorkplaceRepository.Update();
 
-		// save changes
-		//_reservationRepository.SaveChanges();
-		//_equipmentForWorkplaceRepository.SaveChanges();
+		UpdateDatabase(workplaces, dto);
+	}
+
+    private void MoveEquipment(List<WorkplaceDto> workplaces, int eqId, WorkplaceDto source, WorkplaceDto destination)
+    {
+        // substract 1 from closest eqforwp
+        var sourceEq = source.Equipment.FirstOrDefault(e => e.EquipmentId == eqId);
+
+		sourceEq.Count--;
+
+        // add 1 to reserved eqforwp count
+        var destinationEq = destination.Equipment.FirstOrDefault(e => e.EquipmentId == eqId);
+        if (destinationEq == null)
+        {
+            destinationEq = new EquipmentForWorkplaceDto
+            {
+                WorkplaceId = destination.Id,
+                EquipmentId = eqId,
+                Count = 1
+            };
+			workplaces.FirstOrDefault(w => w.Id == destination.Id).Equipment.Add(destinationEq);
+        }
+        else
+        {
+            destinationEq.Count++;
+        }
+    }
+
+	private void UpdateDatabase(List<WorkplaceDto> workplaceDtos, CreateReservationDto createReservationDto)
+	{
+        var createListDto = new List<EquipmentForWorkplaceDto>();
+        var removeListDto = new List<EquipmentForWorkplaceDto>();
+        var updateListDto = new List<EquipmentForWorkplaceDto>();
+        foreach (var wp in workplaceDtos)
+        {
+            createListDto.AddRange(wp.Equipment.Where(e => e.Id == 0).ToList());
+            removeListDto.AddRange(wp.Equipment.Where(e => e.Count == 0).ToList());
+            updateListDto.AddRange(wp.Equipment.Where(e => e.Id != 0 && e.Count != 0).ToList());
+        }
+        var createList = _mapper.Map<List<EquipmentForWorkplace>>(createListDto);
+        var removeList = _mapper.Map<List<EquipmentForWorkplace>>(removeListDto);
+        var updateList = _mapper.Map<List<EquipmentForWorkplace>>(updateListDto);
+
+        // this is needed because it tracks some changes while searching for the closest workplace
+        _equipmentForWorkplaceRepository.ClearChangeTracker();
+
+        _equipmentForWorkplaceRepository.AddRange(createList);
+        _equipmentForWorkplaceRepository.RemoveRange(removeList);
+        _equipmentForWorkplaceRepository.UpdateRange(updateList);
+
+        // add reservation
+        var reservation = _mapper.Map<Reservation>(createReservationDto);
+        _reservationRepository.Add(reservation);
+
+        // save changes
+        _reservationRepository.SaveChanges();
+        _equipmentForWorkplaceRepository.SaveChanges();
+    }
+
+
+
+	public ReservationViewModel GetReservationViewModel()
+	{
+		var reservations = _reservationRepository.GetAll(DateTime.Now);
+		var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+		return new ReservationViewModel { Reservations = reservationDtos.ToList() };
 	}
 }

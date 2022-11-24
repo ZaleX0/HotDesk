@@ -68,6 +68,11 @@ public class HotDeskSeeder
             new Workplace { Floor = 0, Room = 2, Table = 3 },
             new Workplace { Floor = 0, Room = 2, Table = 4 },
 
+            new Workplace { Floor = 0, Room = 3, Table = 1 },
+            new Workplace { Floor = 0, Room = 3, Table = 2 },
+            new Workplace { Floor = 0, Room = 3, Table = 3 },
+            new Workplace { Floor = 0, Room = 3, Table = 4 },
+
             new Workplace { Floor = 1, Room = 1, Table = 1 },
             new Workplace { Floor = 1, Room = 1, Table = 2 },
         };
@@ -79,7 +84,8 @@ public class HotDeskSeeder
         {
             new Equipment { Type = "Monitor" },
             new Equipment { Type = "Keyboard" },
-            new Equipment { Type = "Mouse" }
+            new Equipment { Type = "Mouse" },
+            new Equipment { Type = "Printer" }
         };
     }
 
@@ -88,7 +94,6 @@ public class HotDeskSeeder
         return new List<EquipmentForWorkplace>
         {
             new EquipmentForWorkplace { WorkplaceId = 1, EquipmentId = 1, Count = 1 },
-            new EquipmentForWorkplace { WorkplaceId = 1, EquipmentId = 2, Count = 1 },
             new EquipmentForWorkplace { WorkplaceId = 1, EquipmentId = 3, Count = 1 },
 
             new EquipmentForWorkplace { WorkplaceId = 2, EquipmentId = 1, Count = 2 },
@@ -97,6 +102,8 @@ public class HotDeskSeeder
             new EquipmentForWorkplace { WorkplaceId = 3, EquipmentId = 1, Count = 1 },
 
             new EquipmentForWorkplace { WorkplaceId = 5, EquipmentId = 1, Count = 2 },
+
+            new EquipmentForWorkplace { WorkplaceId = 10, EquipmentId = 4, Count = 3 },
         };
     }
 }

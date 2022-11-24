@@ -1,4 +1,5 @@
 ﻿using HotDesk.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotDesk.Repositories;
 
@@ -11,11 +12,17 @@ public class ReservationRepository
 		_context = context;
 	}
 
-	public List<Reservation> GetIntersecting(DateTime from, DateTime to)
+	public IEnumerable<Reservation> GetAll(DateTime TimeTo)
 	{
-        return _context.Reservations
-			.Where(r => r.TimeTo < from && r.TimeFrom < to)
-			.ToList();
+		return _context.Reservations
+			.Where(r => r.TimeTo > TimeTo)
+			.Include(r=>r.Employee)
+			.Include(r=>r.Workplace);
+	}
+
+	public IEnumerable<Reservation> GetIntersecting(DateTime TimeFrom, DateTime TimeTo)
+	{
+		return _context.Reservations.Where(r => r.TimeFrom < TimeTo && TimeFrom < r.TimeTo);
 	}
 
 	public void Add(Reservation reservation)

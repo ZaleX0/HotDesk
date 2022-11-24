@@ -13,17 +13,23 @@ public class ReservationController : Controller
 		_reservationService = reservationService;
 	}
 
-	[HttpGet]
-	public IActionResult Index(GetReservationInfoDto dto)
+    public IActionResult Index()
+    {
+        var model = _reservationService.GetReservationViewModel();
+        return View(model);
+    }
+
+    [HttpGet]
+	public IActionResult Create(GetReservationInfoDto dto)
 	{
-		var model = _reservationService.GetReservationViewModel(dto);
+		var model = _reservationService.GetCreateReservationViewModel(dto);
 		return View(model);
 	}
 
-	[HttpPost]
-	public IActionResult Create(CreateReservationDto dto)
-	{
-		_reservationService.CreateReservation(dto);
-		return View();
-	}
+    [HttpPost]
+    public IActionResult Create(CreateReservationDto dto)
+    {
+        _reservationService.CreateReservation(dto);
+        return RedirectToAction("Index");
+    }
 }

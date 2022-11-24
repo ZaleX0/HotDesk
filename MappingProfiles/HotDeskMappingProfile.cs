@@ -11,8 +11,8 @@ public class HotDeskMappingProfile : Profile
 		CreateMap<Employee, EmployeeDto>()
 			.ForMember(d => d.Name, c => c.MapFrom(s => $"{s.FirstName} {s.LastName}"));
 
-
-		CreateMap<EquipmentForWorkplace, EquipmentForWorkplaceDto>()
+        CreateMap<EquipmentForWorkplaceDto, EquipmentForWorkplace>();
+        CreateMap<EquipmentForWorkplace, EquipmentForWorkplaceDto>()
 			.ForMember(d => d.Type, c => c.MapFrom(s => s.Equipment.Type));
 
 		CreateMap<EquipmentForWorkplace, EquipmentDto>()
@@ -26,5 +26,11 @@ public class HotDeskMappingProfile : Profile
 		CreateMap<CreateReservationDto, Reservation>()
 			.ForMember(d => d.TimeFrom, c => c.MapFrom(s => s.From))
 			.ForMember(d => d.TimeTo, c => c.MapFrom(s => s.To));
-	}
+
+		CreateMap<Reservation, ReservationDto>()
+			.ForMember(d => d.EmployeeName, c => c.MapFrom(s => $"{s.Employee.FirstName} {s.Employee.LastName}"))
+			.ForMember(d => d.Floor, c => c.MapFrom(s => s.Workplace.Floor))
+			.ForMember(d => d.Room, c => c.MapFrom(s => s.Workplace.Room))
+			.ForMember(d => d.Table, c => c.MapFrom(s => s.Workplace.Table));
+    }
 }

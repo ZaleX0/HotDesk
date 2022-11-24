@@ -7,4 +7,7 @@ public class Reservation
     public int WorkplaceId { get; set; }
     public DateTime TimeFrom { get; set; }
     public DateTime TimeTo { get; set; }
+
+    public virtual Employee Employee { get; set; }
+    public virtual Workplace Workplace { get; set; }
 }

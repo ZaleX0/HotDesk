@@ -1,4 +1,5 @@
 ﻿using HotDesk.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotDesk.Repositories;
 
