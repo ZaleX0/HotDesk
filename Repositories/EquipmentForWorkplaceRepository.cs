@@ -1,10 +1,11 @@
 ﻿using HotDesk.Entities;
+using HotDesk.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HotDesk.Repositories;
 
-public class EquipmentForWorkplaceRepository
+public class EquipmentForWorkplaceRepository : IEquipmentForWorkplaceRepository
 {
 	private readonly HotDeskDbContext _context;
 
@@ -23,18 +24,18 @@ public class EquipmentForWorkplaceRepository
 
 	public IEnumerable<EquipmentForWorkplace> GetForWorkplace(int workplaceId)
 	{
-        return _context.EquipmentForWorkplace
-            .Where(x => x.WorkplaceId == workplaceId)
-            .Include(x => x.Equipment)
-            .Include(x => x.Workplace)
-            .ToList();
-    }
+		return _context.EquipmentForWorkplace
+			.Where(x => x.WorkplaceId == workplaceId)
+			.Include(x => x.Equipment)
+			.Include(x => x.Workplace)
+			.ToList();
+	}
 
 	public void UpdateRange(IEnumerable<EquipmentForWorkplace> equipmentForWorkplaces)
 	{
 		_context.UpdateRange(equipmentForWorkplaces);
 
-		
+
 
 		//_context.EquipmentForWorkplace.UpdateRange(equipmentForWorkplaces);
 	}
@@ -44,12 +45,12 @@ public class EquipmentForWorkplaceRepository
 		_context.EquipmentForWorkplace.RemoveRange(equipmentForWorkplaces);
 	}
 
-    public void AddRange(IEnumerable<EquipmentForWorkplace> equipmentForWorkplaces)
-    {
-        _context.EquipmentForWorkplace.AddRange(equipmentForWorkplaces);
-    }
+	public void AddRange(IEnumerable<EquipmentForWorkplace> equipmentForWorkplaces)
+	{
+		_context.EquipmentForWorkplace.AddRange(equipmentForWorkplaces);
+	}
 
-    public void Add(EquipmentForWorkplace equipmentForWorkplace)
+	public void Add(EquipmentForWorkplace equipmentForWorkplace)
 	{
 		_context.EquipmentForWorkplace.Add(equipmentForWorkplace);
 	}
@@ -59,13 +60,13 @@ public class EquipmentForWorkplaceRepository
 		return _context.ChangeTracker.Entries();
 	}
 
-    public void ClearChangeTracker()
-    {
-        _context.ChangeTracker.Clear();
-    }
+	public void ClearChangeTracker()
+	{
+		_context.ChangeTracker.Clear();
+	}
 
-    public void SaveChanges()
-    {
+	public void SaveChanges()
+	{
 		_context.SaveChanges();
-    }
+	}
 }

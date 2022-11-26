@@ -1,9 +1,10 @@
 ﻿using HotDesk.Entities;
+using HotDesk.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotDesk.Repositories;
 
-public class ReservationRepository
+public class ReservationRepository : IReservationRepository
 {
 	private readonly HotDeskDbContext _context;
 
@@ -16,8 +17,8 @@ public class ReservationRepository
 	{
 		return _context.Reservations
 			.Where(r => r.TimeTo > date)
-			.Include(r=>r.Employee)
-			.Include(r=>r.Workplace);
+			.Include(r => r.Employee)
+			.Include(r => r.Workplace);
 	}
 
 	public void Add(Reservation reservation)

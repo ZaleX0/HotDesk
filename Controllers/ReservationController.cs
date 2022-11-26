@@ -6,9 +6,9 @@ namespace HotDesk.Controllers;
 
 public class ReservationController : Controller
 {
-	private readonly ReservationService _reservationService;
+	private readonly IReservationService _reservationService;
 
-	public ReservationController(ReservationService reservationService)
+	public ReservationController(IReservationService reservationService)
 	{
 		_reservationService = reservationService;
 	}

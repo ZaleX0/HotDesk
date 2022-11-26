@@ -1,7 +1,9 @@
 using HotDesk;
 using HotDesk.Entities;
 using HotDesk.Repositories;
+using HotDesk.Repositories.Interfaces;
 using HotDesk.Services;
+using HotDesk.UnitsOfWork;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -14,15 +16,16 @@ builder.Services.AddDbContext<HotDeskDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<HotDeskSeeder>();
 
-builder.Services.AddScoped<EmployeesRepository>();
-builder.Services.AddScoped<WorkplaceRepository>();
-builder.Services.AddScoped<EquipmentRepository>();
-builder.Services.AddScoped<EquipmentForWorkplaceRepository>();
-builder.Services.AddScoped<ReservationRepository>();
+builder.Services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+builder.Services.AddScoped<IWorkplaceRepository, WorkplaceRepository>();
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<IEquipmentForWorkplaceRepository, EquipmentForWorkplaceRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
+builder.Services.AddScoped<IHotDeskUnitOfWork, HotDeskUnitOfWork>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<ReservationService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
 
 
 

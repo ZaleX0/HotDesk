@@ -1,9 +1,10 @@
 ﻿using HotDesk.Entities;
+using HotDesk.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotDesk.Repositories;
 
-public class WorkplaceRepository
+public class WorkplaceRepository : IWorkplaceRepository
 {
 	private readonly HotDeskDbContext _context;
 

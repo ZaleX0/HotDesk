@@ -1,8 +1,9 @@
 ﻿using HotDesk.Entities;
+using HotDesk.Repositories.Interfaces;
 
 namespace HotDesk.Repositories;
 
-public class EquipmentRepository
+public class EquipmentRepository : IEquipmentRepository
 {
 	private readonly HotDeskDbContext _context;
 
