@@ -32,4 +32,11 @@ public class ReservationController : Controller
         _reservationService.CreateReservation(dto);
         return RedirectToAction("Index");
     }
+
+    [HttpPost]
+    public IActionResult Delete(int reservationId)
+    {
+        _reservationService.DeleteReservation(reservationId);
+        return RedirectToAction("Index");
+    }
 }

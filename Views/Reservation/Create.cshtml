@@ -53,12 +53,13 @@
                     <th>Table</th>
                     <th>Equipment</th>
                     <th></th>
-                    <th>IsReserved</th>
                 </thead>
                 <tbody>
                     @foreach (var row in Model.Workplaces)
                     {
-                        <tr>
+                        if (row.IsReserved) continue;
+
+                        <tr class=@(row.IsReservedInFuture ? "table-warning" : "")>
                             <td>@row.Floor</td>
                             <td>@row.Room</td>
                             <td>@row.Table</td>
@@ -72,9 +73,6 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary w-100" type="submit" name="workplaceId" value="@row.Id">Choose</button>
-                            </td>
-                            <td>
-                                @row.IsReserved
                             </td>
                         </tr>
                     }
@@ -120,27 +118,31 @@
                     </tbody>
                 </table>
             </div>
-        
+
             <div class="row m-3">
                 <p class="row display-6">Additional equipment</p>
             </div>
-
-            int i = 0;
-            foreach (var eq in Model.AvailableEquipment)
+            if (!Model.SelectedWorkplace.IsReservedInFuture)
             {
-                <div class="row m-2">
-                    <label class="col-sm-1 col-form-label">@eq.Type</label>
-                    <div class="col-sm-1">
-                        <input type="hidden" name="AdditionalEquipment[@i].Id" value="@eq.Id">
-                        <input class="form-control" type="number" min="0" max="@eq.Count" name="AdditionalEquipment[@i].Count" value="0" />
+                int i = 0;
+                foreach (var eq in Model.AvailableEquipment)
+                {
+                    <div class="row m-2">
+                        <label class="col-sm-1 col-form-label">@eq.Type</label>
+                        <div class="col-sm-1">
+                            <input type="hidden" name="AdditionalEquipment[@i].Id" value="@eq.Id">
+                            <input class="form-control" type="number" min="0" max="@eq.Count" name="AdditionalEquipment[@i].Count" value="0" />
+                        </div>
+                        <label class="col-sm-4 col-form-label">@eq.Count available</label>
                     </div>
-                    <label class="col-sm-4 col-form-label">@eq.Count available</label>
-                </div>
-                i++;
+                    i++;
+                }
             }
-        
+            else
+            {
+                <div class="row m-3">You cannot choose additional equipment to workplaces reserved in the future</div>
+            }
             <div class="row m-2">
-                <div class="col-sm-1"></div>
                 <div class="col-sm-4">
                     <button class="btn btn-success" type="submit" disabled="@(Model.SelectedWorkplaceId == 0)">Reserve workplace</button>
                 </div>

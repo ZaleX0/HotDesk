@@ -12,22 +12,26 @@ public class ReservationRepository
 		_context = context;
 	}
 
-	public IEnumerable<Reservation> GetAll(DateTime TimeTo)
+	public IEnumerable<Reservation> GetAllAfterDate(DateTime date)
 	{
 		return _context.Reservations
-			.Where(r => r.TimeTo > TimeTo)
+			.Where(r => r.TimeTo > date)
 			.Include(r=>r.Employee)
 			.Include(r=>r.Workplace);
-	}
-
-	public IEnumerable<Reservation> GetIntersecting(DateTime TimeFrom, DateTime TimeTo)
-	{
-		return _context.Reservations.Where(r => r.TimeFrom < TimeTo && TimeFrom < r.TimeTo);
 	}
 
 	public void Add(Reservation reservation)
 	{
 		_context.Add(reservation);
+	}
+
+	public Reservation GetById(int reservationId)
+	{
+		return _context.Reservations.FirstOrDefault(r => r.Id == reservationId);
+	}
+	public void Delete(Reservation reservation)
+	{
+		_context.Reservations.Remove(reservation);
 	}
 
 	public void SaveChanges()

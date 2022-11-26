@@ -40,7 +40,7 @@ namespace HotDesk.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("HotDesk.Entities.Equipment", b =>
@@ -57,7 +57,7 @@ namespace HotDesk.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Equipment");
+                    b.ToTable("Equipment", (string)null);
                 });
 
             modelBuilder.Entity("HotDesk.Entities.EquipmentForWorkplace", b =>
@@ -81,7 +81,7 @@ namespace HotDesk.Migrations
 
                     b.HasIndex("EquipmentId");
 
-                    b.ToTable("EquipmentForWorkplace");
+                    b.ToTable("EquipmentForWorkplace", (string)null);
                 });
 
             modelBuilder.Entity("HotDesk.Entities.Reservation", b =>
@@ -106,7 +106,7 @@ namespace HotDesk.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("HotDesk.Entities.Workplace", b =>
@@ -128,7 +128,7 @@ namespace HotDesk.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workplaces");
+                    b.ToTable("Workplaces", (string)null);
                 });
 
             modelBuilder.Entity("HotDesk.Entities.EquipmentForWorkplace", b =>

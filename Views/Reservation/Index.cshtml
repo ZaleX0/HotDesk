@@ -1,7 +1,7 @@
 ﻿@model ReservationViewModel
 
 <a asp-controller="Reservation" asp-action="Create">
-    <button>Create reservation</button>
+    <button class="btn btn-primary mb-2">Create reservation</button>
 </a>
 
 <table class="table table-sm table-hover table-bordered">
@@ -12,6 +12,7 @@
     <th>Floor</th>
     <th>Room</th>
     <th>Table</th>
+    <th></th>
     </thead>
     <tbody>
         @foreach (var row in Model.Reservations)
@@ -23,6 +24,12 @@
                 <td>@row.Floor</td>
                 <td>@row.Room</td>
                 <td>@row.Table</td>
+                <td>
+                    @using (Html.BeginForm("Delete", "Reservation", FormMethod.Post))
+                    {
+                        <button class="btn btn-danger" type="submit" name="reservationId" value="@row.Id">Delete reservation</button>
+                    }
+                </td>
             </tr>
         }
     </tbody>

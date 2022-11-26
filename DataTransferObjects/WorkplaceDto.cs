@@ -10,4 +10,5 @@ public class WorkplaceDto
     public List<EquipmentForWorkplaceDto>? Equipment { get; set; }
 
     public bool IsReserved { get; set; }
+    public bool IsReservedInFuture { get; set; }
 }
