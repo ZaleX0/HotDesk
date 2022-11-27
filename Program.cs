@@ -26,6 +26,7 @@ builder.Services.AddScoped<IHotDeskUnitOfWork, HotDeskUnitOfWork>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 
 
 

@@ -34,10 +34,6 @@ public class EquipmentForWorkplaceRepository : IEquipmentForWorkplaceRepository
 	public void UpdateRange(IEnumerable<EquipmentForWorkplace> equipmentForWorkplaces)
 	{
 		_context.UpdateRange(equipmentForWorkplaces);
-
-
-
-		//_context.EquipmentForWorkplace.UpdateRange(equipmentForWorkplaces);
 	}
 
 	public void RemoveRange(IEnumerable<EquipmentForWorkplace> equipmentForWorkplaces)

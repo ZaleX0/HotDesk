@@ -1,0 +1,41 @@
+﻿@model EquipmentForWorkplaceViewModel
+
+@using (Html.BeginForm("Add", "Equipment", FormMethod.Post))
+{
+    <div class="d-flex flex-column">
+        <div class="row m-2">
+            <label class="col-sm-1 col-form-label">Workplace</label>
+            <div class="col-sm-4">
+                @Html.DropDownList("WorkplaceId",
+                    Model.Workplaces.Select(w => new SelectListItem
+                    {
+                        Text = $"Floor {w.Floor}, Room {w.Room}, Table {w.Table}",
+                        Value = w.Id.ToString(),
+                    }), new {@class="form-control"})
+            </div>
+        </div>
+        <div class="row m-2">
+            <label class="col-sm-1 col-form-label">Equipment</label>
+            <div class="col-sm-4">
+                @Html.DropDownList("EquipmentId",
+                    Model.Equipment.Select(e => new SelectListItem
+                    {
+                        Text = e.Type,
+                        Value = e.Id.ToString(),
+                    }), new {@class="form-control"})
+            </div>
+        </div>
+        <div class="row m-2">
+            <label class="col-sm-1 col-form-label">Count</label>
+            <div class="col-sm-1">
+                <input class="form-control" type="number" min="1" name="Count" value="1"/>
+            </div>
+        </div>
+        <div class="row m-2">
+            <div class="col-sm-1 col-form-label"></div>
+            <div class="col-sm-4">
+                <button class="btn btn-primary" type="submit">Add Equipment</button>
+            </div>
+        </div>
+    </div>
+}

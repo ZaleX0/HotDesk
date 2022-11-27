@@ -20,6 +20,7 @@ public class HotDeskMappingProfile : Profile
 			.ForMember(d => d.Type, c => c.MapFrom(s => s.Equipment.Type))
 			.ForMember(d => d.Count, c => c.MapFrom(s => s.Count));
 
+		CreateMap<AddEquipmentForWorkplaceDto, EquipmentForWorkplace>();
         CreateMap<Equipment, EquipmentDto>();
 		CreateMap<Workplace, WorkplaceDto>();
 
