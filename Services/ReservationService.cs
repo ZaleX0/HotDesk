@@ -10,16 +10,14 @@ namespace HotDesk.Services;
 
 public class ReservationService : IReservationService
 {
-	private readonly IMapper _mapper;
 	private readonly IHotDeskUnitOfWork _unitOfWork;
+	private readonly IMapper _mapper;
 
-	public ReservationService(IMapper mapper, IHotDeskUnitOfWork hotDeskUnitOfWork)
+	public ReservationService(IHotDeskUnitOfWork hotDeskUnitOfWork, IMapper mapper)
 	{
-		_mapper = mapper;
 		_unitOfWork = hotDeskUnitOfWork;
+		_mapper = mapper;
 	}
-
-
 
 	public CreateReservationViewModel GetCreateReservationViewModel(GetReservationInfoDto dto)
 	{

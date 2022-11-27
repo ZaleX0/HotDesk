@@ -1,8 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>
+        In this project you can reserve workplaces, add new equipment and add new employees.
+        You can select an employee, choose dates of reservation, choose workplace, add additional equipment.
+        After adding additional equipment it is moved between workplaces automatically from the closest free workplace.
+    </p>
+    <p>To view the list of reservations and to create a new reservation go to the <a asp-controller="Reservation">Reservations</a> page</p>
+    <p>To add new equipment go to the <a asp-controller="Equipment">Equipment</a> page</p>
+    <p>To add new employee go to the <a asp-controller="Employee">Employee</a> page</p>
 </div>

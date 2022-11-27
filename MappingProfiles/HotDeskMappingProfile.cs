@@ -8,6 +8,7 @@ public class HotDeskMappingProfile : Profile
 {
 	public HotDeskMappingProfile()
 	{
+		CreateMap<AddEmployeeDto, Employee>();
 		CreateMap<Employee, EmployeeDto>()
 			.ForMember(d => d.Name, c => c.MapFrom(s => $"{s.FirstName} {s.LastName}"));
 

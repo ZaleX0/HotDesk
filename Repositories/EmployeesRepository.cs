@@ -12,6 +12,12 @@ public class EmployeesRepository : IEmployeesRepository
 		_context = context;
 	}
 
+	public void Add(Employee employee)
+	{
+		_context.Employees.Add(employee);
+		_context.SaveChanges();
+	}
+
 	public IEnumerable<Employee> GetAll()
 	{
 		return _context.Employees.ToList();

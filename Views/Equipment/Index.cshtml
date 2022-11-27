@@ -1,8 +1,14 @@
 ﻿@model EquipmentForWorkplaceViewModel
+@{
+    ViewData["Title"] = "Add Equipment";
+}
 
 @using (Html.BeginForm("Add", "Equipment", FormMethod.Post))
 {
     <div class="d-flex flex-column">
+        <div class="row m-3">
+            <p class="row display-6">Add new equipment</p>
+        </div>
         <div class="row m-2">
             <label class="col-sm-1 col-form-label">Workplace</label>
             <div class="col-sm-4">
